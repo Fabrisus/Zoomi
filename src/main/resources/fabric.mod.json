@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "zoomi",
+  "version": "${version}",
+  "name": "Zoomi",
+  "description": "Just Another Zoom Mod",
+  "authors": [
+    "Farbrisus"
+  ],
+  "contact": {
+    "homepage": "https://farbrisus.de",
+    "repo": "https://github.com/Fabrisus/Zoomi"
+  },
+  "license": "MIT",
+  "icon": "assets/zoomi/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "de.farbrisus.zoomi.client.ZoomiClient"
+    ],
+    "main": [
+      "de.farbrisus.zoomi.Zoomi"
+    ]
+  },
+  "mixins": [
+    "zoomi.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
