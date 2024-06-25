@@ -15,12 +15,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class GameOptionAccessor {
 
     @Inject(method = "getFov", at = @At("RETURN"), cancellable = true)
-    private void getZoomLevel(Camera camera, float tickDelta, boolean changingFov, CallbackInfoReturnable<Double> callbackInfo) {
+    public void getZoomLevel(Camera camera, float tickDelta, boolean changingFov, CallbackInfoReturnable<Double> callbackInfo) {
         if (ZoomiClient.isZooming()) {
             double fov = callbackInfo.getReturnValue();
             callbackInfo.setReturnValue(fov * ZoomiClient.getZoomLevel());
         }
-
         ZoomiClient.manageSmoothCamera();
     }
 }

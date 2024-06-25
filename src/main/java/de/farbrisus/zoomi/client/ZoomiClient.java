@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
 public class ZoomiClient implements ClientModInitializer {
@@ -14,7 +15,11 @@ public class ZoomiClient implements ClientModInitializer {
     private static boolean originalSmoothCameraEnabled;
     private static final MinecraftClient mc = MinecraftClient.getInstance();
 
-    public static final double ZOOM_LEVEL = 0.23;
+    private static final double ZOOM_INCREMENT = 0.05;
+    private static final double MAX_ZOOM = 0.83;
+    private static final double MIN_ZOOM = 0.03;
+
+    public static double ZOOM_LEVEL = 0.23;
 
     @Override
     public void onInitializeClient() {
@@ -34,6 +39,16 @@ public class ZoomiClient implements ClientModInitializer {
 
     public static double getZoomLevel() {
         return ZOOM_LEVEL;
+    }
+
+    public static void zoomIn() {
+        ZOOM_LEVEL += ZOOM_INCREMENT;
+        ZOOM_LEVEL = MathHelper.clamp(ZOOM_LEVEL, MIN_ZOOM, MAX_ZOOM);
+    }
+
+    public static void zoomOut() {
+        ZOOM_LEVEL += -ZOOM_INCREMENT;
+        ZOOM_LEVEL = MathHelper.clamp(ZOOM_LEVEL, MIN_ZOOM, MAX_ZOOM);
     }
 
     public static void manageSmoothCamera() {
