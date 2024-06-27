@@ -2,14 +2,22 @@ package de.farbrisus.zoomi.client;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.toast.SystemToast;
+import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
+import java.util.Objects;
 
 public class ZoomiClient implements ClientModInitializer {
 
+    private static boolean CHECKED_KEYBINDING = false;
     private static boolean currentlyZoomed;
     private static KeyBinding zoomKeyBinding;
     private static boolean originalSmoothCameraEnabled;
@@ -31,7 +39,45 @@ public class ZoomiClient implements ClientModInitializer {
         ));
         currentlyZoomed = false;
         originalSmoothCameraEnabled = false;
+        ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+            if (!CHECKED_KEYBINDING && screen instanceof TitleScreen) {
+                checkKeyBinding(zoomKeyBinding);
+                CHECKED_KEYBINDING = true;
+            }
+        });
+
     }
+
+    private void checkKeyBinding(KeyBinding keyBinding) {
+        int count = 0;
+        for (KeyBinding otherKeyBinding : mc.options.allKeys) {
+            if (Objects.equals(otherKeyBinding.getBoundKeyTranslationKey(), keyBinding.getBoundKeyTranslationKey())) {
+                count++;
+            }
+            if (count > 1) {
+                MutableText title = Text.translatable("keybind.title.zoomi");
+                MutableText desc = Text.translatable("keybind.desc.zoomi");
+                displayToast(title, desc);
+            }
+        }
+    }
+
+
+    public void displayToast(MutableText title, MutableText description) {
+        // Create the toast message
+        SystemToast toast = new SystemToast(
+                SystemToast.Type.LOW_DISK_SPACE,
+                Text.of(title),
+                Text.of(description)
+        );
+
+        // Get the Minecraft client and display the toast
+        MinecraftClient client = MinecraftClient.getInstance();
+        ToastManager toastManager = client.getToastManager();
+        toastManager.add(toast);
+
+    }
+
 
     public static boolean isZooming() {
         return zoomKeyBinding.isPressed();

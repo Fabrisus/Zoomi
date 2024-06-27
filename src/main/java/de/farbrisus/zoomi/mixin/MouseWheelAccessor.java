@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Mouse.class)
 public class MouseWheelAccessor {
 
-    @Inject(method = "onMouseScroll", at = @At("RETURN"))
+    @Inject(method = "onMouseScroll", at = @At("RETURN"),  cancellable = true)
     public void onScrollEvent(long window, double horizontal, double vertical, CallbackInfo ci) {
         if (ZoomiClient.isZooming()) {
             if(vertical < 0) {
@@ -23,7 +23,5 @@ public class MouseWheelAccessor {
                 ZoomiClient.zoomOut();
             }
         }
-        //ZoomiClient.manageSmoothCamera();
-
     }
 }
