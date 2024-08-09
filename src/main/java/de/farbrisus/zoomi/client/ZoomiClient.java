@@ -13,6 +13,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
+
 import java.util.Objects;
 
 public class ZoomiClient implements ClientModInitializer {
@@ -62,7 +63,6 @@ public class ZoomiClient implements ClientModInitializer {
         }
     }
 
-
     public void displayToast(MutableText title, MutableText description) {
         // Create the toast message
         SystemToast toast = new SystemToast(
@@ -77,7 +77,6 @@ public class ZoomiClient implements ClientModInitializer {
         toastManager.add(toast);
 
     }
-
 
     public static boolean isZooming() {
         return zoomKeyBinding.isPressed();
@@ -135,6 +134,7 @@ public class ZoomiClient implements ClientModInitializer {
     }
 
     private static void zoomStopped() {
+
         currentlyZoomed = false;
     }
 
