@@ -8,6 +8,7 @@
     "MouseWheelAccessor"
   ],
   "client": [
+    "MouseMixin"
   ],
   "injectors": {
     "defaultRequire": 1
