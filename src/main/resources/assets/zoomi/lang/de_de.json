@@ -2,5 +2,6 @@
   "key.zoomi": "Zoom wechseln",
   "category.zoomi": "Zoomi",
   "keybind.title.zoomi": "Tastenkonflikt mit Zoomi",
-  "keybind.desc.zoomi": "Etwas benutzt die gleiche Taste"
+  "keybind.desc.zoomi": "Etwas benutzt die gleiche Taste",
+  "text.desc.zoomlvl": "Zoomstufe: "
 }

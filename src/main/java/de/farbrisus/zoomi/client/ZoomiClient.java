@@ -2,16 +2,21 @@ package de.farbrisus.zoomi.client;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.ToastManager;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Objects;
@@ -27,8 +32,7 @@ public class ZoomiClient implements ClientModInitializer {
     private static final double ZOOM_INCREMENT = 0.05;
     private static final double MAX_ZOOM = 0.83;
     private static final double MIN_ZOOM = 0.03;
-
-    public static double ZOOM_LEVEL = 0.23;
+    private static double ZOOM_LEVEL = 0.23;
 
     @Override
     public void onInitializeClient() {
@@ -44,6 +48,12 @@ public class ZoomiClient implements ClientModInitializer {
             if (!CHECKED_KEYBINDING && screen instanceof TitleScreen) {
                 checkKeyBinding(zoomKeyBinding);
                 CHECKED_KEYBINDING = true;
+            }
+        });
+        HudRenderCallback.EVENT.register((drawContext, tickDeltaManager) -> {
+            if (isZooming()) {
+                //renderSpyglassOverlay(drawContext);
+                renderText(drawContext);
             }
         });
 
@@ -75,7 +85,6 @@ public class ZoomiClient implements ClientModInitializer {
         MinecraftClient client = MinecraftClient.getInstance();
         ToastManager toastManager = client.getToastManager();
         toastManager.add(toast);
-
     }
 
     public static boolean isZooming() {
@@ -134,7 +143,6 @@ public class ZoomiClient implements ClientModInitializer {
     }
 
     private static void zoomStopped() {
-
         currentlyZoomed = false;
     }
 
@@ -145,4 +153,34 @@ public class ZoomiClient implements ClientModInitializer {
             disableSmoothCamera();
         }
     }
+
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
+    }
+
+    public static void renderText(@NotNull DrawContext context) {
+
+        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+        MutableText zoomlvl = Text.translatable("text.desc.zoomlvl").append(String.valueOf(round(ZOOM_LEVEL,2)));
+        Text text = Text.of(zoomlvl);
+        renderScaledText(context, textRenderer, text, 10, 10, 0xFFFFFF, 0.5f);
+
+    }
+
+    public static void renderScaledText(DrawContext context, TextRenderer textRenderer, Text text, int x, int y, int color, float scale) {
+
+        MatrixStack matrices = context.getMatrices();
+        matrices.push();
+        matrices.scale(scale, scale, 1.0f);
+        float adjustedX = x / scale;
+        float adjustedY = y / scale;
+        context.drawText(textRenderer, text, (int) adjustedX, (int) adjustedY, color, false);
+        matrices.pop();
+
+    }
+
 }

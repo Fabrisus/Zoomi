@@ -2,5 +2,6 @@
   "key.zoomi": "Toggle Zoom",
   "category.zoomi": "Zoomi",
   "keybind.title.zoomi": "Key Conflict with Zoomi",
-  "keybind.desc.zoomi": "Something shares the same key"
+  "keybind.desc.zoomi": "Something shares the same key",
+  "text.desc.zoomlvl": "Zoom level: "
 }
