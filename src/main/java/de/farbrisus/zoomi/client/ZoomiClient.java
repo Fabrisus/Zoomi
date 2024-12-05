@@ -30,9 +30,9 @@ public class ZoomiClient implements ClientModInitializer {
     private static final MinecraftClient mc = MinecraftClient.getInstance();
 
     private static final double ZOOM_INCREMENT = 0.05;
-    private static final double MAX_ZOOM = 0.83;
-    private static final double MIN_ZOOM = 0.03;
-    private static double ZOOM_LEVEL = 0.23;
+    private static final double MAX_ZOOM = 1.00;
+    private static final double MIN_ZOOM = 0.01;
+    private static double ZOOM_LEVEL = 0.20;
 
     @Override
     public void onInitializeClient() {
@@ -97,12 +97,19 @@ public class ZoomiClient implements ClientModInitializer {
 
     public static void zoomIn() {
         ZOOM_LEVEL += ZOOM_INCREMENT;
-        ZOOM_LEVEL = MathHelper.clamp(ZOOM_LEVEL, MIN_ZOOM, MAX_ZOOM);
+        //ZOOM_LEVEL = MathHelper.clamp(ZOOM_LEVEL, MIN_ZOOM, MAX_ZOOM);
+        if (ZOOM_LEVEL > MAX_ZOOM){
+            ZOOM_LEVEL = MAX_ZOOM;
+        }
     }
 
     public static void zoomOut() {
         ZOOM_LEVEL += -ZOOM_INCREMENT;
-        ZOOM_LEVEL = MathHelper.clamp(ZOOM_LEVEL, MIN_ZOOM, MAX_ZOOM);
+        //ZOOM_LEVEL = MathHelper.clamp(ZOOM_LEVEL, MIN_ZOOM, MAX_ZOOM);
+
+        if (ZOOM_LEVEL < MIN_ZOOM){
+            ZOOM_LEVEL = MIN_ZOOM;
+        }
     }
 
     public static void manageSmoothCamera() {
@@ -165,7 +172,7 @@ public class ZoomiClient implements ClientModInitializer {
     public static void renderText(@NotNull DrawContext context) {
 
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-        MutableText zoomlvl = Text.translatable("text.desc.zoomlvl").append(String.valueOf(round(ZOOM_LEVEL,2)));
+        MutableText zoomlvl = Text.translatable("text.desc.zoomlvl").append(calculatePercentage(round(ZOOM_LEVEL, 2)) + " %");
         Text text = Text.of(zoomlvl);
         renderScaledText(context, textRenderer, text, 10, 10, 0xFFFFFF, 0.5f);
 
@@ -181,6 +188,13 @@ public class ZoomiClient implements ClientModInitializer {
         context.drawText(textRenderer, text, (int) adjustedX, (int) adjustedY, color, false);
         matrices.pop();
 
+    }
+
+    public static int calculatePercentage(double value) {
+        if (value <= 0.01) {
+            value = 0.00;
+        }
+        return (int) ((1.00 - value)*100);
     }
 
 }
