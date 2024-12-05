@@ -15,7 +15,6 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
@@ -106,7 +105,6 @@ public class ZoomiClient implements ClientModInitializer {
     public static void zoomOut() {
         ZOOM_LEVEL += -ZOOM_INCREMENT;
         //ZOOM_LEVEL = MathHelper.clamp(ZOOM_LEVEL, MIN_ZOOM, MAX_ZOOM);
-
         if (ZOOM_LEVEL < MIN_ZOOM){
             ZOOM_LEVEL = MIN_ZOOM;
         }
