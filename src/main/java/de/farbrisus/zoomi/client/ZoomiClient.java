@@ -20,7 +20,6 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
-
 import java.util.Objects;
 
 public class ZoomiClient implements ClientModInitializer {
@@ -36,7 +35,7 @@ public class ZoomiClient implements ClientModInitializer {
     private static final double MAX_ZOOM = 1.00f;
     private static final double MIN_ZOOM = 0.01f;
     private static double ZOOM_LEVEL = CONFIG.DefaultZoomLevel();
-    private static double TARGET_ZOOM_LEVEL = ZOOM_LEVEL;
+    private static double TARGET_ZOOM_LEVEL = 0;
     private static final double SMOOTH_SPEED = 5f;
     private static double DefaultMouseSensitivity = 0;
 
@@ -121,19 +120,19 @@ public class ZoomiClient implements ClientModInitializer {
     }
 
     public static void zoomIn() {
-        //TARGET_ZOOM_LEVEL += ZOOM_INCREMENT;
-        TARGET_ZOOM_LEVEL = approachValue(ZOOM_LEVEL, ZOOM_LEVEL+ZOOM_INCREMENT, SMOOTH_SPEED, 1);
+        TARGET_ZOOM_LEVEL += ZOOM_INCREMENT;
         if (TARGET_ZOOM_LEVEL > MAX_ZOOM) {
             TARGET_ZOOM_LEVEL = MAX_ZOOM;
         }
+        ZOOM_LEVEL = approachValue(ZOOM_LEVEL, TARGET_ZOOM_LEVEL, SMOOTH_SPEED, 0.001);
     }
 
     public static void zoomOut() {
-        //TARGET_ZOOM_LEVEL -= ZOOM_INCREMENT;
-        TARGET_ZOOM_LEVEL = approachValue(ZOOM_LEVEL, ZOOM_LEVEL-ZOOM_INCREMENT, SMOOTH_SPEED, 1);
+        TARGET_ZOOM_LEVEL -= ZOOM_INCREMENT;
         if (TARGET_ZOOM_LEVEL < MIN_ZOOM) {
             TARGET_ZOOM_LEVEL = MIN_ZOOM;
         }
+        ZOOM_LEVEL = approachValue(ZOOM_LEVEL, TARGET_ZOOM_LEVEL, SMOOTH_SPEED, 0.001);
     }
 
     private static void updateZoomLevelToDefault() {
