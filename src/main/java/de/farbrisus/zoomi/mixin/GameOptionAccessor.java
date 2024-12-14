@@ -16,11 +16,8 @@ public class GameOptionAccessor {
 
     @Inject(method = "getFov", at = @At("RETURN"), cancellable = true)
     public void getZoomLevel(Camera camera, float tickDelta, boolean changingFov, CallbackInfoReturnable<Float> callbackInfo) {
-        if (ZoomiClient.isZooming()) {
-            Float fov = callbackInfo.getReturnValue();
-            callbackInfo.setReturnValue(fov * (float) ZoomiClient.getZoomLevel());
-        }
+        Float fov = callbackInfo.getReturnValue();
+        callbackInfo.setReturnValue(fov * (float) ZoomiClient.getZoomLevel());
         ZoomiClient.manageSmoothCamera();
     }
-
 }

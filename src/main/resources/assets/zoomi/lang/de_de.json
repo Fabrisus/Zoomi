@@ -3,5 +3,14 @@
   "category.zoomi": "Zoomi",
   "keybind.title.zoomi": "Tastenkonflikt mit Zoomi",
   "keybind.desc.zoomi": "Etwas benutzt die gleiche Taste",
-  "text.desc.zoomlvl": "Zoomstufe: "
+  "text.desc.zoomlvl": "Zoomstufe: ",
+  "modmenu.nameTranslation.zoomi": "Zoomi",
+  "modmenu.descriptionTranslation.zoomi": "Nur eine andere Zoom Mod!",
+  "text.config.Zoomi.option.ZoomStep": "",
+  "text.config.Zoomi.option.DefaultZoomLevel": "Standard Zoom Level",
+  "text.config.Zoomi.option.SmoothCamera": "Schalte Smooth Camera",
+  "text.config.Zoomi.title": "Zoomi Config",
+  "text.config.Zoomi.option.ZoomStep.tooltip": "Test1",
+  "text.config.Zoomi.option.DefaultZoomLevel.tooltip": "Wenn die Zoomtaste gedrückt wird, wie stark gezoomt werden soll",
+  "text.config.Zoomi.option.SmoothCamera.tooltip": "Ob Smooth Camera benutzt werden soll"
 }

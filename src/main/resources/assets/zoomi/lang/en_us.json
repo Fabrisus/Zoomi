@@ -3,5 +3,14 @@
   "category.zoomi": "Zoomi",
   "keybind.title.zoomi": "Key Conflict with Zoomi",
   "keybind.desc.zoomi": "Something shares the same key",
-  "text.desc.zoomlvl": "Zoom level: "
+  "text.desc.zoomlvl": "Zoom level: ",
+  "modmenu.nameTranslation.zoomi": "Zoomi",
+  "modmenu.descriptionTranslation.zoomi": "Just another Zoom Mod!",
+  "text.config.Zoomi.option.ZoomStep": "Test1",
+  "text.config.Zoomi.option.DefaultZoomLevel": "Default zoom level",
+  "text.config.Zoomi.option.SmoothCamera": "Toggle smooth camera",
+  "text.config.Zoomi.option.ZoomStep.tooltip": "Test1",
+  "text.config.Zoomi.option.DefaultZoomLevel.tooltip": "When the zoom button is pressed, how far should be zoomed in",
+  "text.config.Zoomi.option.SmoothCamera.tooltip": "Whether smooth camera should be used",
+  "text.config.Zoomi.title": "Zoomi Config"
 }
