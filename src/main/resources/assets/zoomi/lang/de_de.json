@@ -8,9 +8,11 @@
   "modmenu.descriptionTranslation.zoomi": "Nur eine andere Zoom Mod!",
   "text.config.Zoomi.option.ZoomStep": "",
   "text.config.Zoomi.option.DefaultZoomLevel": "Standard Zoom Level",
-  "text.config.Zoomi.option.SmoothCamera": "Schalte Smooth Camera",
+  "text.config.Zoomi.option.SmoothCamera": "Schalte 'Smooth Camera'",
   "text.config.Zoomi.title": "Zoomi Config",
   "text.config.Zoomi.option.ZoomStep.tooltip": "Test1",
   "text.config.Zoomi.option.DefaultZoomLevel.tooltip": "Wenn die Zoomtaste gedrückt wird, wie stark gezoomt werden soll",
-  "text.config.Zoomi.option.SmoothCamera.tooltip": "Ob Smooth Camera benutzt werden soll"
+  "text.config.Zoomi.option.SmoothCamera.tooltip": "Ob 'Smooth Camera' benutzt werden soll",
+  "text.config.Zoomi.option.ShowKeyConflict.tooltip": "Ob beim Starten nach einem Tastenkonflikt gesucht werden soll",
+  "text.config.Zoomi.option.ShowKeyConflict": "Schalte Tastenkonflikt Check"
 }

@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -31,14 +32,13 @@ public class ZoomiClient implements ClientModInitializer {
     private static boolean originalSmoothCameraEnabled;
     private static final MinecraftClient mc = MinecraftClient.getInstance();
     private Screen lastScreen = null;
-    private static final double ZOOM_INCREMENT = 0.05f;
-    private static final double MAX_ZOOM = 1.00f;
-    private static final double MIN_ZOOM = 0.01f;
-    private static double ZOOM_LEVEL = CONFIG.DefaultZoomLevel();
-    private static double TARGET_ZOOM_LEVEL = 0;
-    private static final double SMOOTH_SPEED = 5f;
+    private static final int ZOOM_INCREMENT = 5;
+    private static final int MAX_ZOOM = 100;
+    private static final int MIN_ZOOM = 1;
+    private static final int SMOOTH_SPEED = 5;
+    private static int ZOOM_LEVEL = (int)(CONFIG.DefaultZoomLevel() * 100);
+    private static int TARGET_ZOOM_LEVEL = ZOOM_LEVEL;
     private static double DefaultMouseSensitivity = 0;
-
 
     @Override
     public void onInitializeClient() {
@@ -50,48 +50,57 @@ public class ZoomiClient implements ClientModInitializer {
         ));
         currentlyZoomed = false;
         originalSmoothCameraEnabled = false;
+
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
             if (!CHECKED_KEYBINDING && screen instanceof TitleScreen) {
                 checkKeyBinding(zoomKeyBinding);
                 CHECKED_KEYBINDING = true;
             }
         });
+
         HudRenderCallback.EVENT.register((drawContext, tickDeltaManager) -> {
             if (isZooming()) {
                 renderText(drawContext);
-                if (!CONFIG.SmoothCamera()) {
-                    mc.options.getMouseSensitivity().setValue(DefaultMouseSensitivity * (float) ZoomiClient.getZoomLevel());
+                String mcVersion = FabricLoader.getInstance().getModContainer("minecraft")
+                        .map(mod -> mod.getMetadata().getVersion().getFriendlyString())
+                        .orElse("unknown");
+
+                float newSensitivity = (float) (DefaultMouseSensitivity * ((float)ZOOM_LEVEL / 100f));
+                if (mcVersion.startsWith("1.21.1") ||
+                        mcVersion.startsWith("1.21.2") ||
+                        mcVersion.startsWith("1.21.3") ||
+                        mcVersion.startsWith("1.21.4")) {
+                    mc.options.getMouseSensitivity().setValue((double) newSensitivity);
                 }
-                ZOOM_LEVEL = approachValue(ZOOM_LEVEL, TARGET_ZOOM_LEVEL, SMOOTH_SPEED, 0.005);
-            }
-            else {
-                ZOOM_LEVEL = approachValue(ZOOM_LEVEL, 1, SMOOTH_SPEED, 0.01);
+                ZOOM_LEVEL = approachValue(ZOOM_LEVEL, TARGET_ZOOM_LEVEL, SMOOTH_SPEED);
+            } else {
+                ZOOM_LEVEL = approachValue(ZOOM_LEVEL, MAX_ZOOM, SMOOTH_SPEED);
                 updateZoomLevelToDefault();
             }
-
-
         });
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             Screen currentScreen = MinecraftClient.getInstance().currentScreen;
             if (currentScreen != lastScreen) {
-                if (!(currentScreen == null)) {
+                if (currentScreen != null) {
                     DefaultMouseSensitivity = mc.options.getMouseSensitivity().getValue();
                 }
             }
             lastScreen = currentScreen;
-
         });
-
-
     }
 
-    private void checkKeyBinding(KeyBinding keyBinding) {
-        int count = 0;
-        for (KeyBinding otherKeyBinding : mc.options.allKeys) {
-            if (Objects.equals(otherKeyBinding.getBoundKeyTranslationKey(), keyBinding.getBoundKeyTranslationKey())) {
-                count++;
+    private void checkKeyBinding(KeyBinding myKeyBinding) {
+        int conflictCount = 0;
+        if (CONFIG.ShowKeyConflict()) {
+            for (KeyBinding otherKeyBinding : mc.options.allKeys) {
+                if (otherKeyBinding == myKeyBinding) continue;
+                if (Objects.equals(otherKeyBinding.getBoundKeyTranslationKey(), myKeyBinding.getBoundKeyTranslationKey())) {
+                    conflictCount++;
+                    break;
+                }
             }
-            if (count > 1) {
+            if (conflictCount > 0) {
                 MutableText title = Text.translatable("keybind.title.zoomi");
                 MutableText desc = Text.translatable("keybind.desc.zoomi");
                 displayToast(title, desc);
@@ -105,7 +114,6 @@ public class ZoomiClient implements ClientModInitializer {
                 Text.of(title),
                 Text.of(description)
         );
-
         MinecraftClient client = MinecraftClient.getInstance();
         ToastManager toastManager = client.getToastManager();
         toastManager.add(toast);
@@ -115,40 +123,41 @@ public class ZoomiClient implements ClientModInitializer {
         return zoomKeyBinding.isPressed();
     }
 
-    public static double getZoomLevel() {
+    public static int getZoomLevel() {
         return ZOOM_LEVEL;
     }
 
-    public static void zoomIn() {
+    public static void zoomOut() {
         TARGET_ZOOM_LEVEL += ZOOM_INCREMENT;
+        if (TARGET_ZOOM_LEVEL == 6) {
+            TARGET_ZOOM_LEVEL = 5;
+        }
         if (TARGET_ZOOM_LEVEL > MAX_ZOOM) {
             TARGET_ZOOM_LEVEL = MAX_ZOOM;
         }
-        ZOOM_LEVEL = approachValue(ZOOM_LEVEL, TARGET_ZOOM_LEVEL, SMOOTH_SPEED, 0.001);
+        ZOOM_LEVEL = approachValue(ZOOM_LEVEL, TARGET_ZOOM_LEVEL, SMOOTH_SPEED);
     }
 
-    public static void zoomOut() {
+
+    public static void zoomIn() {
         TARGET_ZOOM_LEVEL -= ZOOM_INCREMENT;
         if (TARGET_ZOOM_LEVEL < MIN_ZOOM) {
             TARGET_ZOOM_LEVEL = MIN_ZOOM;
         }
-        ZOOM_LEVEL = approachValue(ZOOM_LEVEL, TARGET_ZOOM_LEVEL, SMOOTH_SPEED, 0.001);
+        ZOOM_LEVEL = approachValue(ZOOM_LEVEL, TARGET_ZOOM_LEVEL, SMOOTH_SPEED);
     }
 
     private static void updateZoomLevelToDefault() {
         if (!isZooming()) {
-            TARGET_ZOOM_LEVEL = CONFIG.DefaultZoomLevel();
+            TARGET_ZOOM_LEVEL = (int)(CONFIG.DefaultZoomLevel() * 100);
         }
     }
 
-    public static double approachValue(double current, double target, double speed, double dt) {
-        double difference = target - current;
-        double step = speed * dt;
-
+    public static int approachValue(int current, int target, int step) {
+        int difference = target - current;
         if (Math.abs(difference) <= step) {
             return target;
         }
-
         return current + (difference > 0 ? step : -step);
     }
 
@@ -158,8 +167,12 @@ public class ZoomiClient implements ClientModInitializer {
             if (CONFIG.SmoothCamera()) {
                 enableSmoothCamera();
             }
+            DefaultMouseSensitivity = mc.options.getMouseSensitivity().getValue();
         }
-
+        if (isZooming()) {
+            float newSensitivity = (float) (DefaultMouseSensitivity * ((float)ZOOM_LEVEL / 100f));
+            mc.options.getMouseSensitivity().setValue((double) newSensitivity);
+        }
         if (zoomStopping()) {
             zoomStopped();
             if (CONFIG.SmoothCamera()) {
@@ -206,17 +219,10 @@ public class ZoomiClient implements ClientModInitializer {
         }
     }
 
-    public static double round(double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
-        long factor = (long) Math.pow(10, places);
-        value = value * factor;
-        long tmp = Math.round(value);
-        return (double) tmp / factor;
-    }
-
     public static void renderText(@NotNull DrawContext context) {
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-        MutableText zoomlvl = Text.translatable("text.desc.zoomlvl").append(calculatePercentage(round(ZOOM_LEVEL, 2)) + " %");
+        MutableText zoomlvl = Text.translatable("text.desc.zoomlvl")
+                .append(calculatePercentage(ZOOM_LEVEL) + " %");
         Text text = Text.of(zoomlvl);
         renderScaledText(context, textRenderer, text, 10, 10, 0xFFFFFF, 0.5f);
     }
@@ -231,10 +237,9 @@ public class ZoomiClient implements ClientModInitializer {
         matrices.pop();
     }
 
-    public static int calculatePercentage(double val) {
-        if (val <= 0.01) {
-            val = 0.00;
-        }
-        return (int) ((1.00 - val) * 100);
+    public static int calculatePercentage(int zoomVal) {
+        if (MAX_ZOOM - zoomVal == 99)
+            return 100;
+        return MAX_ZOOM - zoomVal;
     }
 }

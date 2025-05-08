@@ -11,6 +11,8 @@
   "text.config.Zoomi.option.SmoothCamera": "Toggle smooth camera",
   "text.config.Zoomi.option.ZoomStep.tooltip": "Test1",
   "text.config.Zoomi.option.DefaultZoomLevel.tooltip": "When the zoom button is pressed, how far should be zoomed in",
-  "text.config.Zoomi.option.SmoothCamera.tooltip": "Whether smooth camera should be used",
-  "text.config.Zoomi.title": "Zoomi Config"
+  "text.config.Zoomi.option.SmoothCamera.tooltip": "Whether 'smooth camera' should be used",
+  "text.config.Zoomi.title": "Zoomi Config",
+  "text.config.Zoomi.option.ShowKeyConflict.tooltip": "Whether to search for a key conflict at startup",
+  "text.config.Zoomi.option.ShowKeyConflict": "Toggle KeyConflict Check"
 }

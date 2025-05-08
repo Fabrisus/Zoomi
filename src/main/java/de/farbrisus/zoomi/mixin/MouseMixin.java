@@ -17,9 +17,9 @@ public class MouseMixin {
     public void onMouseScroll(long window, double horizontal, double vertical, CallbackInfo info) {
         if (ZoomiClient.isZooming()) {
             if (vertical > 0) {
-                ZoomiClient.zoomOut();
-            } else if (vertical < 0) {
                 ZoomiClient.zoomIn();
+            } else if (vertical < 0) {
+                ZoomiClient.zoomOut();
             }
             info.cancel();
         }
