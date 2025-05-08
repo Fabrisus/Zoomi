@@ -9,6 +9,6 @@ Enhance your exploration and observation capabilities in Minecraft with the Zoom
 
 Have fun!
 
-**<u>Needs Fabric API to function properly!</u>**
+**<u>Needs Fabric API and owo Lib to function properly!</u>**
 
 Download on [Modrinth](https://modrinth.com/mod/zoomi) or [Curseforge](https://www.curseforge.com/minecraft/mc-mods/zoomi)
